@@ -2,6 +2,8 @@ public class SlackPub {
 
     private static final String MESSAGE_TEMPLATE = 'The following {0} has changed:\n{1}\nNew {2}: *{3}*';
 
+    private static final String SLACK_HOOK_URL = getSlackHookUrl();
+
     public class PubRecord {
         @InvocableVariable(label='Object Type')
         public String objName;
@@ -28,12 +30,11 @@ public class SlackPub {
 
         // DEMO POINT 4: Here's where we actually instantiate and
         // pass the Queueable object to the queue, in order to execute it.
-        System.enqueueJob(new QueueableSlackCall(getSlackHookUrl(), 'POST', body));
+        System.enqueueJob(new QueueableSlackCall(SLACK_HOOK_URL, 'POST', body));
     }
 
     private static List<String> getListFromPubRecord(PubRecord record){
         List<String> fieldList = new List<String>();
-
         fieldList.add(record.objName);
         fieldList.add(record.nameValue);
         fieldList.add(record.field1Name);
@@ -67,6 +68,8 @@ public class SlackPub {
         }
     }
 
+    // DEMO POINT 1: We are retrieving the Slack hook URL from a custom settings.
+    // This is a best practice because our token is safely stored, it's not hard coded and an admin can change it.
     private static String getSlackHookUrl() {
         Slack_Settings__c settings = Slack_Settings__c.getOrgDefaults();
         if (settings.Post_Web_Hook__c == null || settings.Post_Web_Hook__c == '') {
