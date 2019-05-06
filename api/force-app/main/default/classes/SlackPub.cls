@@ -68,14 +68,14 @@ public class SlackPub {
         }
     }
 
-    // DEMO POINT 1: We are retrieving the Slack hook URL from a custom settings.
+    // DEMO POINT 1: We are retrieving the Slack hook URL from a custom metadata type.
     // This is a best practice because our token is safely stored, it's not hard coded and an admin can change it.
     private static String getSlackHookUrl() {
-        Slack_Settings__c settings = Slack_Settings__c.getOrgDefaults();
-        if (settings.Post_Web_Hook__c == null || settings.Post_Web_Hook__c == '') {
-            throw new SlackConfigException('Missing Slack Custom Settings');
+        Slack_Settings__mdt[] settings = [SELECT Post_Web_Hook__c FROM Slack_Settings__mdt LIMIT 1];
+        if (settings.size() == 0 || settings[0].Post_Web_Hook__c == null) {
+            throw new SlackConfigException('Missing Slack_Settings__mdt Custom Metadata');
         }
-        return settings.Post_Web_Hook__c;
+        return settings[0].Post_Web_Hook__c;
     }
 
     public class SlackConfigException extends Exception {}
